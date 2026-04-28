@@ -1,0 +1,95 @@
+{%- assign API_BASE = 'https://monumental-pudding-cc51a5.netlify.app' -%}
+{%- assign TOKEN_SALT = '' -%}
+{%- assign sku = product.variants.first.sku -%}
+
+{%- if TOKEN_SALT != '' -%}
+  {%- assign hour_bucket = 'now' | date: '%s' | divided_by: 3600 -%}
+  {%- assign token_input = sku | append: ':' | append: hour_bucket -%}
+  {%- assign token = token_input | hmac_sha256: TOKEN_SALT -%}
+{%- endif -%}
+
+<div class="piramide-olfativa-container">
+  <style>
+    :root {
+      --piramide-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --piramide-text-dark: #333;
+      --piramide-text-light: #444;
+      --piramide-border: #eaeaea;
+      --piramide-bg-fallback: #f8f8f8;
+    }
+    #piramide-olfativa {
+      max-width: 100%;
+      margin-top: 20px;
+      font-family: var(--piramide-font);
+    }
+    .piramide-seccion { margin-bottom: 24px; }
+    .piramide-seccion h4 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: var(--piramide-text-dark);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .notas-container { display: flex; flex-wrap: wrap; gap: 16px; }
+    .nota-item {
+      width: 72px;
+      text-align: center;
+      transition: transform 0.2s ease, opacity 0.3s ease;
+    }
+    .nota-item:hover { transform: translateY(-3px); }
+    .nota-img-wrapper {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 8px auto;
+      border-radius: 15%;
+      overflow: hidden;
+      border: 1px solid var(--piramide-border);
+      background-color: var(--piramide-bg-fallback);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .nota-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .nota-nombre {
+      font-size: 13px;
+      text-transform: capitalize;
+      color: var(--piramide-text-light);
+      line-height: 1.2;
+    }
+  </style>
+
+  <div id="piramide-olfativa"
+       data-sku="{{ sku }}"
+       data-api="{{ API_BASE }}/api/notas"
+       {% if token %}data-token="{{ token }}"{% endif %}
+       style="display: none;"></div>
+
+  <script>
+    (function () {
+      const container = document.getElementById('piramide-olfativa');
+      if (!container) return;
+
+      const sku = container.dataset.sku;
+      const api = container.dataset.api;
+      const token = container.dataset.token;
+      if (!sku || !api) return;
+
+      const url = new URL(api);
+      url.searchParams.set('sku', sku);
+      if (token) url.searchParams.set('t', token);
+
+      fetch(url.toString(), { credentials: 'omit', mode: 'cors' })
+        .then(function (r) { return r.ok ? r.text() : null; })
+        .then(function (html) {
+          if (!html || !html.trim()) return;
+          container.innerHTML = html;
+          container.style.display = 'block';
+        })
+        .catch(function () { /* silencioso */ });
+    })();
+  </script>
+</div>

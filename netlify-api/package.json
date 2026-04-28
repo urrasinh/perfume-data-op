@@ -1,0 +1,17 @@
+{
+  "name": "perfume-data-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API encapsulada para datos de producto (comentarios/aromas/notas) servidos como HTML a Shopify.",
+  "scripts": {
+    "convert": "node scripts/convert-data.mjs",
+    "dev": "netlify dev"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

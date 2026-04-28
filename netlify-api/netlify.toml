@@ -1,0 +1,27 @@
+[build]
+  functions = "netlify/functions"
+  publish   = "public"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["data/*.json"]
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[redirects]]
+  from = "/api/comentarios"
+  to   = "/.netlify/functions/comentarios"
+  status = 200
+
+[[redirects]]
+  from = "/api/aromas"
+  to   = "/.netlify/functions/aromas"
+  status = 200
+
+[[redirects]]
+  from = "/api/notas"
+  to   = "/.netlify/functions/notas"
+  status = 200

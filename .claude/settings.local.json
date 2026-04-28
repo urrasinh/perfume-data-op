@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node scripts/convert-data.mjs)",
+      "Bash(node -e \"const d=require\\('./data/aromas.json'\\);const keys=Object.keys\\(d\\);console.log\\('Aromas SKUs:',keys.length,'primero:',keys[0]\\)\")",
+      "Bash(npm install *)",
+      "Bash(netlify --version)",
+      "Bash(netlify status *)",
+      "Bash(NETLIFY_AUTH_TOKEN=nfp_Gdhy9gLvM8GjWuRv8JKwGTUJAhnZRxn2498f netlify status)",
+      "Bash(NETLIFY_AUTH_TOKEN=nfp_Gdhy9gLvM8GjWuRv8JKwGTUJAhnZRxn2498f netlify link --name monumental-pudding-cc51a5)",
+      "Bash(NETLIFY_AUTH_TOKEN=nfp_Gdhy9gLvM8GjWuRv8JKwGTUJAhnZRxn2498f netlify deploy --prod --build)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://monumental-pudding-cc51a5.netlify.app/api/aromas?sku=TRUE\")",
+      "Bash(curl -s \"https://monumental-pudding-cc51a5.netlify.app/api/aromas?sku=TRUE\")",
+      "Bash(NETLIFY_AUTH_TOKEN=nfp_Gdhy9gLvM8GjWuRv8JKwGTUJAhnZRxn2498f netlify deploy --prod --build --skip-functions-cache)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' 'https://monumental-pudding-cc51a5.netlify.app/api/__TRACKED_VAR__?sku=TRUE')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://monumental-pudding-cc51a5.netlify.app/api/comentarios?sku=AUTHENTICD\")"
+    ]
+  }
+}

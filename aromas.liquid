@@ -1,0 +1,98 @@
+{%- assign API_BASE = 'https://monumental-pudding-cc51a5.netlify.app' -%}
+{%- assign TOKEN_SALT = '' -%}
+{%- assign sku = product.selected_or_first_available_variant.sku -%}
+
+{%- if TOKEN_SALT != '' -%}
+  {%- assign hour_bucket = 'now' | date: '%s' | divided_by: 3600 -%}
+  {%- assign token_input = sku | append: ':' | append: hour_bucket -%}
+  {%- assign token = token_input | hmac_sha256: TOKEN_SALT -%}
+{%- endif -%}
+
+<div id="aromas-chart-container"
+     data-sku="{{ sku }}"
+     data-api="{{ API_BASE }}/api/aromas"
+     {% if token %}data-token="{{ token }}"{% endif %}
+     style="display: none;">
+</div>
+
+<style>
+  #aromas-chart-container {
+    width: 100%;
+    max-width: 350px;
+    margin: 2rem 0;
+    font-family: inherit;
+  }
+  .aromas-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.2rem;
+    color: #111;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.5rem;
+  }
+  .aroma-row { display: flex; align-items: center; margin-bottom: 16px; }
+  .aroma-label {
+    flex: 0 0 150px;
+    font-size: 0.8rem;
+    color: #444;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 12px;
+  }
+  .aroma-bar-track {
+    flex: 1;
+    background-color: #f2f2f2;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    height: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .aroma-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 16px;
+    transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+</style>
+
+<script>
+  (function () {
+    const container = document.getElementById('aromas-chart-container');
+    if (!container) return;
+
+    const sku = container.dataset.sku;
+    const api = container.dataset.api;
+    const token = container.dataset.token;
+    if (!sku || !api) return;
+
+    const url = new URL(api);
+    url.searchParams.set('sku', sku);
+    if (token) url.searchParams.set('t', token);
+
+    fetch(url.toString(), { credentials: 'omit', mode: 'cors' })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (html) {
+        if (!html) return;
+        container.innerHTML = html;
+        container.style.display = 'block';
+
+        const fills = container.querySelectorAll('.aroma-bar-fill');
+        requestAnimationFrame(function () {
+          setTimeout(function () {
+            fills.forEach(function (fill, index) {
+              setTimeout(function () {
+                fill.style.width = fill.getAttribute('data-width');
+              }, index * 150);
+            });
+          }, 50);
+        });
+      })
+      .catch(function () { /* silencioso */ });
+  })();
+</script>
